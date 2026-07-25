@@ -1,0 +1,65 @@
+## building your own kernel module
+
+- right kernel headers as include
+  
+```
+#include <linux/kernel.h>
+#include <linux/module.h>
+```
+
+- module meta info
+  
+```
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Eike Struckmeier");
+MODULE_DESCRIPTION("My own kernel module");
+```
+
+you can check out those infos like this after your kernel module has built:
+```
+modinfo ./hello.ko
+filename:       /root/little_penguin-1_git/ex01/./hello.ko
+description:    My own kernel module
+author:         Eike Struckmeier
+license:        GPL
+depends:        
+name:           hello
+retpoline:      Y
+vermagic:       7.2.0-rc4-estruckm-00471-g0ce37745d4bf SMP preempt mod_unload 
+```
+
+- specify init function   
+- 
+```
+module_init(&custom_function);
+```
+
+- specify exit function (cleaning function)
+  
+```
+module_exit(&custom_function);
+```
+
+# creating the Makefile for the kernel module
+
+you need to convert your .o file to a obj-m file for the kernel 
+obj-m := hello.o
+also you need to specify the path to the kernel build Makefile, use bash commands to have the correct path that you need
+all:
+	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+
+clean:
+	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+
+# insert your module into the kernel
+
+via insmod and rmmod command you can insert and remove your from the kernel
+the dmesg command will show you the kernel logs and the according command actions:
+```
+[ 3208.075005] test_hello_init: In init
+[ 3384.690152] test_hello_exit: In exit
+[ 3395.841778] test_hello_init: In init
+[ 3414.849063] test_hello_exit: In exit
+[ 4037.785144] test_hello_init: In init
+```
+
