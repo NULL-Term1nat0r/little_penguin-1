@@ -16,13 +16,16 @@ make menuconfig
 ```
  Here you go to General setup select it and type your value for EXTRAVERSION naming
 
-step 1:
+# step 1:
+
 ![alt text](<menuconfig_general_settings.png>)
 
-step 2:
+# step 2:
+
 ![alt text](menuconfig_general_setup_settings.png)
 
-step 3:
+# step 3:
+
 ![alt text](menuconfig_general_setup_extraversion_settings.png)
 
 # install new with new kernel configuration
@@ -46,4 +49,5 @@ reboot
 ```
 
 ![alt text](bootloader_menu_entries.png)
+
 ![alt text](dmesg_log.png)
