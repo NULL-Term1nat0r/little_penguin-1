@@ -28,17 +28,50 @@ retpoline:      Y
 vermagic:       7.2.0-rc4-estruckm-00471-g0ce37745d4bf SMP preempt mod_unload 
 ```
 
-- specify init function   
-- 
+# specify init function   
 ```
 module_init(&custom_function);
 ```
 
-- specify exit function (cleaning function)
+# specify exit function (cleaning function)
   
 ```
 module_exit(&custom_function);
 ```
+
+# code compatability for older linux-kernel versions
+
+in modern kernels you can use the pr_info function for printing variadic arguments. In older kernels this function didn't exist yet and printk was used. You can always check out on https://elixir.bootlin.com/linux/1.0.9/A/ident/pr_info whether a function works for an older kernel version or not
+
+Another important thing is __init and __exit as compiler function attributes. They are used for convention in kernel programming in times of the kernel life cycle.
+
+what __init does:
+
+it places the function in a special .init.text section in the compiled object. When the module finishes loading the kernel discards the entore section and to free memory. Since the code is never executed again it makes sense free the memory
+
+what __exit does:
+
+it places code into .exit.text section. There it keeps it since you might need hello_exit() later
+But this behavior depends also on the kernel config. When CONFIG_MODULE_UNLOAD=y is activated it keeps it. If it's deactivated it strips exit.text entirely. Therefore the code will never run and we should'nt keep it
+
+in our scenario we stick with printk:
+```
+static int __init hello_init(void)
+{
+    printk(KERN_INFO "Hello world!\n");
+    return 0;
+}
+
+static void __exit hello_exit(void)
+{
+    printk(KERN_INFO "Cleaning up module.\n");
+}
+```
+
+init kernel functions are expected to have an integer return value therefore our test_hello_init function returns 0 on success
+
+the exit function is constructed as a voif function where no value is expected to be returned by the kernel
+
 
 # creating the Makefile for the kernel module
 
