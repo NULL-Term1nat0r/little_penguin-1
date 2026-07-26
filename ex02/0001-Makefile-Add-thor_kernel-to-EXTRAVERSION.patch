@@ -1,0 +1,31 @@
+From 215b783e9bac86cf4b946f02f2ec55165b075ebe Mon Sep 17 00:00:00 2001
+From: root <root@lfs.localdomain>
+Date: Sun, 26 Jul 2026 15:09:15 +0200
+Subject: [PATCH] Makefile: Add -thor_kernel to EXTRAVERSION
+
+Change the EXTRAVERSION field so the running kernel includes
+-thor_kernel in its version string.
+
+Signed-off-by: root <root@lfs.localdomain>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+ mode change 100644 => 100755 Makefile
+
+diff --git a/Makefile b/Makefile
+old mode 100644
+new mode 100755
+index 11539c3fd405..65786457710d
+--- a/Makefile
++++ b/Makefile
+@@ -2,7 +2,7 @@
+ VERSION = 7
+ PATCHLEVEL = 2
+ SUBLEVEL = 0
+-EXTRAVERSION = -rc4
++EXTRAVERSION = -rc4-thor_kernel
+ NAME = Baby Opossum Posse
+ 
+ # *DOCUMENTATION*
+-- 
+2.55.0
