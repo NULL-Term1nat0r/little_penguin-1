@@ -17,7 +17,7 @@ make menuconfig
  Here you go to General setup select it and type your value for EXTRAVERSION naming
 
 step 1:
-![alt text](menuconfig_general_settings.png)
+![alt text](<menuconfig_general_settings.png>)
 
 step 2:
 ![alt text](menuconfig_general_setup_settings.png)
