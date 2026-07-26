@@ -456,6 +456,8 @@ it can happen that it will complain about a new line character at the end, but t
 usr/src/linux/scripts/checkpatch.pl task.c -no-tree -file --ignore MISSING_EOF_NEWLINE --strict
 ```
 
+After that you should try to compile it with the Makefile created in Assignment 01
+
 # Summary Table
 
 | Change | Reason |
