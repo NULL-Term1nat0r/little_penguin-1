@@ -1,0 +1,1 @@
+./detect_hotplug_event.o

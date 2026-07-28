@@ -1,0 +1,1 @@
+savedcmd_detect_hotplug_event.ko := ld -r -m elf_x86_64 -z noexecstack --no-warn-rwx-segments --build-id=sha1  -T /usr/src/linux/scripts/module.lds -o detect_hotplug_event.ko detect_hotplug_event.o detect_hotplug_event.mod.o .module-common.o

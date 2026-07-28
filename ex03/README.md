@@ -460,19 +460,29 @@ After that you should try to compile it with the Makefile created in Assignment 
 
 # Summary Table
 
-| Change | Reason |
-|---|---|
-| Added SPDX license | Kernel licensing standard |
-| Added MODULE_LICENSE | Prevent kernel taint |
-| Removed unused include | Cleaner dependencies |
-| Added static functions | Avoid global symbols |
-| Removed retval | Eliminate unused parameter |
-| Fixed `my_int` dereference | Correct pointer usage |
-| Changed indentation | Linux kernel style |
-| Changed `udelay()` | Avoid unnecessary busy waiting |
-| Added `\n` to `pr_info()` | Correct kernel logging |
-| Removed second return | Remove dead code |
-| Added `__init` | Free initialization memory |
-| Added `__exit` | Correct unload handling |
-| Returned `0` from init | Correct module loading behavior |
+| Change                     | Reason                          |
+| -------------------------- | ------------------------------- |
+| Added SPDX license         | Kernel licensing standard       |
+| Added MODULE\_LICENSE      | Prevent kernel taint            |
+| Removed unused include     | Cleaner dependencies            |
+| Added static functions     | Avoid global symbols            |
+| Removed retval             | Eliminate unused parameter      |
+| Fixed `my_int` dereference | Correct pointer usage           |
+| Changed indentation        | Linux kernel style              |
+| Changed `udelay()`         | Avoid unnecessary busy waiting  |
+| Added `\n` to `pr_info()`  | Correct kernel logging          |
+| Removed second return      | Remove dead code                |
+| Added `__init`             | Free initialization memory      |
+| Added `__exit`             | Correct unload handling         |
+| Returned `0` from init     | Correct module loading behavior |
+
 ````
+
+
+
+
+
+
+char a = 'b';
+char * c = &a;
+printf("pointer cast to unsigned long: %llu/n", c);
