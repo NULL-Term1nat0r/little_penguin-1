@@ -495,3 +495,114 @@ Keep these four layers separate in your head:
 └──────────────────────────────┘
 
 For the assignment, we should next trace one real keyboard plug-in on theLinux machine with commands like udevadm monitor, udevadm info, lsusb -v, and modprobe -c. That will let you see the exact uevent → modalias → udev → modprobe path rather than just learning it theoretically.
+
+# step 8
+
+Check out the following kernel files for a better understanding of the underlying functons that we will use in our code:
+
+the kernel source code contains about a 190 HID drivers. If you put your kernel source files in /usr/src you will find them here:
+
+```text
+/usr/src/linux/drivers/hid
+```
+If you downloaded the Documentation you can also check out the following path to get to understand the HID protocol a bit better:
+```text
+/usr/src/linux/Documentation/hid/hiddev.txt
+```
+Alternatively you van visit the following site: https://www.kernel.org/doc/Documentation/hid/hiddev.txt
+Another good ressource is https://www.kernel.org/doc/Documentation/hid/hid-transport.txt to udnerstand more about transport drivers which decide which device drivers to use
+
+additonally we want to check where the function comes from that we will use for our kernel module:
+```text
+local link
+```
+
+# step 9 meta information from usb device
+
+Now we need to understand some specifics about usb devices like a keyboardnow we need to understand some specifics about usb devices like a keyboard. Type the command lsusb in your terminal:
+```
+lsusb
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 001 Device 002: ID 80ee:0021 VirtualBox USB Tablet
+Bus 001 Device 003: ID 046d:c31c Logitech, Inc. Keyboard K120
+Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+```
+From this output we get the information about vendor_id and product_id. We will later need this in order to create our kernel module and detect the plugging of our keyboard
+
+From those two ids we can get more detailed information about the plugged USB device
+
+```
+-bash-5.3# lsusb -v -d 046d:c31c | grep -E 'idVendor|idProduct|bcdDevice|iManufacturer|iProduct|iSerialNumber|bDeviceClass|bInterfaceClass'
+  bDeviceClass            0 [unknown]
+  idVendor           0x046d Logitech, Inc.
+  idProduct          0xc31c Keyboard K120
+  bcdDevice           49.20
+  iManufacturer           1 Logitech
+  iProduct                2 USB Keyboard
+      bInterfaceClass         3 Human Interface Device
+      bInterfaceClass         3 Human Interface Device
+```
+
+You can use this to write your own transport driver or get extra information. Also we see that we have two interfaces that communicate with the HID layer in our system. One USB device can have multiple interfaces which communicate with the according driver.
+
+# step 10 let's start coding!
+
+Linux is providing you with a HID layer to make things easier, more understandable and easier to interact with. We need to library includes to begin with:
+```c
+#include <linux/hid.h>
+#include <linux/module.h>
+```
+
+Now normally we would have and __init and _exit function but module_hid_driver() is doing that for us:
+```c
+module_hid_driver(my_hid_driver);
+```
+We need to pass a certain static struct called  hid_driver whoch we populate here:
+```c
+static struct hid_driver my_hid_driver = {
+	.name = "my_hid",
+	.id_table = my_hid_ids,
+	.probe = my_hid_probe,
+	.remove = my_hid_remove,
+};
+```
+Now our next step is to code  the two remaining functions and struct so we can pass the correct argument to module_hid_driver:
+```c
+static int my_hid_probe(struct hid_device *hdev,
+			const struct hid_device_id *id)
+{
+	pr_info("my_hid: device detected\n");
+
+	return 0;
+}
+
+static void my_hid_remove(struct hid_device *hdev)
+{
+	pr_info("my_hid: device removed\n");
+}
+
+static const struct hid_device_id my_hid_ids[] = {
+	{ HID_USB_DEVICE(0x046d, 0xc31c) },
+	{ }
+};
+```
+Remember in hid_device_id struct you use the vendor_id and product_id that you previously got via the terminal.
+After you successfully compiled you will have to insert module into the runing kernel like in ex01:
+insmod <module_name>.ko
+here is the dmesg output when everything goes right:
+```bash
+[ 6542.237715] usb 1-2: new low-speed USB device number 4 using xhci_hcd
+[ 6543.173794] usb 1-2: New USB device found, idVendor=046d, idProduct=c31c, bcdDevice=49.20
+[ 6543.173809] usb 1-2: New USB device strings: Mfr=1, Product=2, SerialNumber=0
+[ 6543.173817] usb 1-2: Product: USB Keyboard
+[ 6543.173823] usb 1-2: Manufacturer: Logitech
+[ 6543.183851] my_hid: device detected
+[ 6543.191844] my_hid: device detected
+[ 6555.493021] usb 1-2: USB disconnect, device number 4
+[ 6555.493077] my_hid: device removed
+[ 6555.493162] my_hid: device removed
+```
+After that you can savely remove the module by calling:
+```bash
+rmmod <module_name>.ko
+```
