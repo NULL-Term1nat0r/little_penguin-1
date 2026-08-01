@@ -1,0 +1,16 @@
+[  428.762511] misc_device: loading out-of-tree module taints kernel.
+[  428.762813] registered device 258
+[  428.765222] Opening misc device
+[  428.765238] evaluating string: Hello World
+
+[  428.765239] string is not matching estruckm student login
+[  428.765254] Closing device
+[  428.766015] Opening misc device
+[  428.766025] Reading device -> estruckm
+[  428.766050] Closing device
+[  442.338457] Opening misc device
+[  442.338465] evaluating string: hello
+
+[  442.338466] string is not matching estruckm student login
+[  442.338468] Closing device
+[  482.488003] misc device deregistered
