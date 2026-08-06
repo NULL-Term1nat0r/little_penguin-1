@@ -28,14 +28,10 @@ static int misc_open(struct inode *inode, struct file *file) {
 
 static ssize_t misc_read(struct file *file, char __user *buf,
 			size_t count, loff_t *offp){
+	const char *id = "estruckm\n";
+	size_t len = strlen(id);
 
-	int temp,ret=size;
-	if(size) {
-		temp=copy_to_user(buf,msg,size);
-		size=temp;
-		printk(KERN_INFO "Reading device -> estruckm");
-	}
-	return ret;
+	return simple_read_from_buffer(buf, count, offp, id, len);
 }
 
 static ssize_t fortytwo_write(struct file *file,
@@ -44,21 +40,30 @@ static ssize_t fortytwo_write(struct file *file,
 			      loff_t *offp)
 {
 	char data[100];
+	char *success_string = "write was successful";
+	size_t len = strlen(success_string);
 
 	if (count >= sizeof(data))
 		return -EINVAL;
+
 	if (copy_from_user(data, buf, count))
 		return -EFAULT;
-	printk(KERN_INFO "evaluating string: %s\n", data);
-        if (strcmp(buf, "estruckm")){
-                printk(KERN_INFO "string is not matching estruckm student login");
-                return count;
-        }
+
 	data[count] = '\0';
 
-	printk(KERN_INFO "fortytwo successfully received: %s\n", data);
+	if (data[count - 1] == '\n')
+		data[count - 1] = '\0';
 
-	return count;
+	printk(KERN_INFO "evaluating string: %s\n", data);
+
+	if (strcmp(data, "estruckm") != 0) {
+		printk(KERN_INFO "string does not match estruckm\n");
+		return -EINVAL;
+	}
+
+	printk(KERN_INFO "write was successful\n");
+
+	return simple_read_from_buffer(buf, count, offp, success_string, len);
 }
 
 int misc_release (struct inode *inode, struct file *file) {

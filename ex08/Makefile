@@ -1,30 +1,29 @@
-obj-m += misc_device.o
+MODULE_NAME = fix.ko
+
+obj-m += fix.o
 
 all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
 
 clean:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
-	rmmod misc_device.ko
+	dmesg -C
+	rmmod fix.ko
+
 
 re: clean
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
-	dmesg -C
-	rmmod misc_device.ko
-
 
 test: re
-	insmod misc_device.ko
+	insmod fix.ko
 	cat /dev/fortytwo
-	rmmod misc_device.ko
+	rmmod fix.ko
 inject: 
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
-	insmod misc_device.ko
-	echo "Hello World" > /dev/fortytwo
-	cat /dev/fortytwo
+	insmod fix.ko
 
 install:
-	cp misc_device.ko /lib/modules/$(shell uname -r)/extra/
+	cp fix.ko /lib/modules/$(shell uname -r)/extra/
 	sudo depmod -a
-	sudo modprobe misc_device
+	sudo modprobe debugfs

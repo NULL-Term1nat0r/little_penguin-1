@@ -1,0 +1,1 @@
+savedcmd_misc_device.ko := ld -r -m elf_x86_64 -z noexecstack --no-warn-rwx-segments --build-id=sha1 --force-group-allocation  -T /usr/src/linux-next/scripts/module.lds -o misc_device.ko misc_device.o misc_device.mod.o .module-common.o
